@@ -1,16 +1,15 @@
 /**
- *  ISOVIEW
+ * ISOVIEW
  * 
- *  3D Isometric viewer utility
+ * 3D Isometric viewer utility
  * 
  * 
- *  Author: Davide Quaroni - 2019
- *  
- *  rev. 2019.03.19
+ * Author: Davide Quaroni - 2019
+ * 
+ * rev. 2019.03.19
  */
 
-
-/* constructor*/
+/* constructor */
 function IsoView() {
 	this.nodes = [];
 	this.faces = [];
@@ -92,7 +91,7 @@ function IsoView() {
 		a = a * 0.01745329252;
 		return Math.sin(a);
 	};
-	
+
 	/* converts degree angle in rad and calculates cos */
 	var cos = function(a) {
 		a = a * 0.01745329252;
@@ -186,7 +185,7 @@ function IsoView() {
 		}
 		src.draw();
 	};
-	
+
 	/* projects the vertices with isometric projection */
 	this.isoTransform = function() {
 		this.nodesProj = [];
@@ -207,7 +206,11 @@ function IsoView() {
 		return [ node[0] * cos(angle) - node[1] * sin(angle), node[1] * cos(angle) + node[0] * sin(angle) ];
 	};
 
-	/* performs a check point x, y. If the point is inside a polygon it returns the face it's inside and the object it belongs to. Otherwise it returns false */
+	/*
+	 * performs a check point x, y. If the point is inside a polygon it returns
+	 * the face it's inside and the object it belongs to. Otherwise it returns
+	 * false
+	 */
 	this.checkHit = function(x, y) {
 
 		x = x - this.canvasCenterX - this.panX;
@@ -246,11 +249,13 @@ function IsoView() {
 					var vx2 = this.nodesProj[this.faces[i].nodes[0]][0];
 					var vy2 = this.nodesProj[this.faces[i].nodes[0]][1];
 				}
-				// if the y of the 2 vertices aren't both < or both > the testing y:
+				// if the y of the 2 vertices aren't both < or both > the
+				// testing y:
 				if ((vy1 < y) != (vy2 < y)) {
 					// calculates slope of the line:
 					var m = (vx2 - vx1) / (vy2 - vy1);
-					// if substituing the testing y I have a x < testing x, decrease hit. Otherwise, increase it. 
+					// if substituing the testing y I have a x < testing x,
+					// decrease hit. Otherwise, increase it.
 					var xTest = m * (y - vy1) + vx1;
 
 					if (xTest < x) {
@@ -260,7 +265,8 @@ function IsoView() {
 					}
 				}
 			}
-			// if after all tests hit == 0, (x, y) is inside, otherwise it's outside.
+			// if after all tests hit == 0, (x, y) is inside, otherwise it's
+			// outside.
 			if (hit == 0) {
 				face = this.faces[i];
 				break;
@@ -305,6 +311,25 @@ function IsoView() {
 
 	// custom compare function for sorting
 	this.compare = function(a, b) {
+
+		z1 = [];
+		z2 = [];
+
+		for (var i = 0; i < a.nodes.length; i++) {
+			z1.push(instance.nodes[a.nodes[i]][2]);
+		}
+		for (var i = 0; i < b.nodes.length; i++) {
+			z2.push(instance.nodes[b.nodes[i]][2]);
+		}
+		
+		if (findMax(z1) < findMin(z2)) {
+			return -1;
+		}
+		
+		if (findMin(z1) > findMax(z2)) {
+			return 1;
+		}
+
 		pa = instance.average(a);
 		pb = instance.average(b);
 		if (pa[1] < pb[1])
@@ -336,7 +361,10 @@ function IsoView() {
 		logDiv.innerHTML += text + "<br/>";
 	};
 
-	/* returns the normal of a face calculating its signed area. Normal faces the screen if area is > 0 */
+	/*
+	 * returns the normal of a face calculating its signed area. Normal faces
+	 * the screen if area is > 0
+	 */
 	this.normal = function(face) {
 		var x1 = this.nodesProj[face.nodes[0]][0];
 		var y1 = this.nodesProj[face.nodes[0]][1];
@@ -417,23 +445,24 @@ function IsoView() {
 		// ctx.closePath();
 		// ctx.stroke();
 		// }
-		
 		/* NODES: */
 
 		if (this.renderNodes) {
 			this.ctx.fillStyle = this.nodeColor;
 			for (var i = 0; i < this.nodes.length; i++) {
 				this.ctx.beginPath();
-				this.ctx.arc(this.canvasCenterX + this.panX + this.nodesProj[i][0], this.canvasCenterY + this.panY + this.nodesProj[i][1], this.nodeSize, 0, 2 * Math.PI);
+				this.ctx.arc(this.canvasCenterX + this.panX + this.nodesProj[i][0], this.canvasCenterY + this.panY + this.nodesProj[i][1],
+						this.nodeSize, 0, 2 * Math.PI);
 				this.ctx.fill();
 			}
 		}
 
 	};
 
-	
-	/* creates a pattern from a source image. the id of the created pattern can be specified in the 'color' field of a face to fill
-	 * the polygon using the pattern instead of a solid color.
+	/*
+	 * creates a pattern from a source image. the id of the created pattern can
+	 * be specified in the 'color' field of a face to fill the polygon using the
+	 * pattern instead of a solid color.
 	 */
 	this.createPattern = function(id, imgurl, scale) {
 		var image = new Image();
@@ -448,8 +477,10 @@ function IsoView() {
 		});
 	};
 
-	/* creates the canvas where all the graphics will be displayed. divId is the id of a div created in your html document.
-	 * w and h are the width and height dimensions of the canvas.
+	/*
+	 * creates the canvas where all the graphics will be displayed. divId is the
+	 * id of a div created in your html document. w and h are the width and
+	 * height dimensions of the canvas.
 	 */
 	this.createCanvas = function(divId, w, h) {
 
@@ -480,18 +511,16 @@ function IsoView() {
 
 	};
 
-	
-	/** adds a 3D object to the canvas.
-	 * Format:
-	 * obj = {  'origin' : [x, y, z], (coordinates of the relative origin of this object)
-	 * 			'nodes' : [ [x, y, z], [x, y, z], [x, y, z], ... ] (array coordinates of the vertices of the object)
-	 * 			'faces' : [ { 									(array of objects with the following fields)
-	 * 							'id': string, 					(id of the face, for debug purposes only)
-	 * 							'nodes': [ 0, 1, 2, 3 ], 		(array of nodes id forming the face, in clockwise order. 
-	 * 															No need to specify the first node as last, the poly will be automatically closed)
-	 * 							'color' : string 				(color of the face. It can be a HTML color or a pattern id (see createPattern)
-	 * 						}, ... ]
-	 * 	}
+	/**
+	 * adds a 3D object to the canvas. Format: obj = { 'origin' : [x, y, z],
+	 * (coordinates of the relative origin of this object) 'nodes' : [ [x, y,
+	 * z], [x, y, z], [x, y, z], ... ] (array coordinates of the vertices of the
+	 * object) 'faces' : [ { (array of objects with the following fields) 'id':
+	 * string, (id of the face, for debug purposes only) 'nodes': [ 0, 1, 2, 3 ],
+	 * (array of nodes id forming the face, in clockwise order. No need to
+	 * specify the first node as last, the poly will be automatically closed)
+	 * 'color' : string (color of the face. It can be a HTML color or a pattern
+	 * id (see createPattern) }, ... ] }
 	 */
 	this.addObject = function(obj) {
 		var totalNodes = this.nodes.length;
