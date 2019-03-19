@@ -45,11 +45,7 @@ You can now add 3D objects in the following format:
  Using the addObject function:
  
  `iso.addObject(obj);`
- 
- You can display the added objects with the draw function:
- 
- `iso.draw();`
- 
+  
  The canvas will react to the following built-in functions:
  - PAN: mouse drag with left-button pressed.
  - ROTATE: mouse drag with right-button pressed.
