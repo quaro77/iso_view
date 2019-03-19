@@ -15,7 +15,7 @@ Include the iso_view.js in your html file with at least 1 div:
 `<script type="text/javascript" src="./iso_view.js"></script>`
 `<div id='main' style='width: 1200px; height: 600px; border: 1px solid black; margin: auto;'></div>`
 
-In your javascript code, istantiate an IsoView() object:
+In your javascript code, instantiate an IsoView() object:
 
 `iso = new IsoView();`
 
