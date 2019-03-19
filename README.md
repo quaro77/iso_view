@@ -19,25 +19,25 @@ The main function will create a canvas object inside the selected div:
 
 You can now add 3D objects in the following format:
 
-`var obj = {
+`var obj = {`
 
-'origin' : [ x, y, z ],
+`'origin' : [ x, y, z ],`
 
-'nodes' : [ [ x0, y0, z0 ], [ x1, y1, z1 ], [ x2, y2, z2 ], etc. ],
+`'nodes' : [ [ x0, y0, z0 ], [ x1, y1, z1 ], [ x2, y2, z2 ], etc. ],`
 
-'faces' : [
-{
-	id : "face0",
-	nodes : [ 0, 1, 2, 3, etc. ],
-	color : "#edd594"
-}, {
-	id : "par1",
-	nodes : [ 4, 5, 6, 7, etc.],
-	color : "#edd594"
-},
-etc.]
+`'faces' : [`
+`{`
+	`id : "face0",`
+	`nodes : [ 0, 1, 2, 3, etc. ],`
+	`color : "#edd594"`
+`}, {`
+	`id : "par1",`
+	`nodes : [ 4, 5, 6, 7, etc.],`
+	`color : "#edd594"`
+`},`
+`etc.]`
 
-}`
+`}`
  
  Using the following function:
  
