@@ -27,15 +27,15 @@ You can now add 3D objects in the following format:
 
 `'faces' : [`
 
-`{ id : "face0", nodes : [ 0, 1, 2, 3, etc. ], color : "#edd594"},`
+`{ id : 'face0', nodes : [ 0, 1, 2, 3, etc. ], color : '#edd594'},`
 
-`{ id : "par1", nodes : [ 4, 5, 6, 7, etc.], color : "#edd594"},`
+`{ id : 'face1', nodes : [ 4, 5, 6, 7, etc.], color : '#edd594'},`
 
 `etc.]`
 
 `}`
  
- Using the following function:
+ Using the addObject function:
  
  `iso.addObject(obj);`
  
