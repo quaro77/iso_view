@@ -1,6 +1,16 @@
 /**
+ *  ISOVIEW
  * 
+ *  3D Isometric viewer utility
+ * 
+ * 
+ *  Author: Davide Quaroni - 2019
+ *  
+ *  rev. 2019.03.19
  */
+
+
+/* constructor*/
 function IsoView() {
 	this.nodes = [];
 	this.faces = [];
@@ -74,12 +84,16 @@ function IsoView() {
 		}
 	}
 
+	/* const value for sqrt(r) / 2 */
 	var rad3m = 0.866;
 
+	/* converts degree angle in rad and calculates sin */
 	var sin = function(a) {
 		a = a * 0.01745329252;
 		return Math.sin(a);
 	};
+	
+	/* converts degree angle in rad and calculates cos */
 	var cos = function(a) {
 		a = a * 0.01745329252;
 		return Math.cos(a);
@@ -110,11 +124,11 @@ function IsoView() {
 	var mouseMoveCanvas = function(event) {
 		event.preventDefault();
 		var src = event.srcElement.objectRef;
-		if (src.mouseDown2) {
+		if (src.mouseDown2) { // rotation function
 			src.theta += event.x - src.prevMouseX;
 			src.draw();
 			src.mouseDragged = true;
-		} else if (src.mouseDown1) {
+		} else if (src.mouseDown1) { // pad function
 			src.panX += event.x - src.prevMouseX;
 			src.panY += event.y - src.prevMouseY;
 			src.draw();
@@ -172,7 +186,8 @@ function IsoView() {
 		}
 		src.draw();
 	};
-
+	
+	/* projects the vertices with isometric projection */
 	this.isoTransform = function() {
 		this.nodesProj = [];
 		for (var n = 0; n < this.nodes.length; n++) {
@@ -187,10 +202,12 @@ function IsoView() {
 		}
 	};
 
+	/* rotates a vertex around the z axes */
 	var rotate = function(node, angle) {
 		return [ node[0] * cos(angle) - node[1] * sin(angle), node[1] * cos(angle) + node[0] * sin(angle) ];
 	};
 
+	/* performs a check point x, y. If the point is inside a polygon it returns the face it's inside and the object it belongs to. Otherwise it returns false */
 	this.checkHit = function(x, y) {
 
 		x = x - this.canvasCenterX - this.panX;
@@ -198,7 +215,7 @@ function IsoView() {
 
 		face = null;
 		obj = null;
-		// per ogni faccia:
+		// for every face:
 		for (var i = this.faces.length - 1; i >= 0; i--) {
 			var arrX = [];
 			var arrY = [];
@@ -211,15 +228,14 @@ function IsoView() {
 			var minY = findMin(arrY);
 			var maxX = findMax(arrX);
 			var maxY = findMax(arrY);
-			// se x e y sono fuori dalla bounding box passo alla faccia
-			// successiva:
+			// if x and y are outside the bounding box steps to the next face:
 			if (x <= minX || x >= maxX || y <= minY || y >= maxY) {
 				continue;
 			}
 			var hit = 0;
-			// per ogni vertice della faccia
+			// for every vertex of the face:
 			for (var a = 0; a < this.faces[i].nodes.length; a++) {
-				// carico il segmento da a ad a+1:
+				// load segment from a to a+1:
 				var vx1 = this.nodesProj[this.faces[i].nodes[a]][0];
 				var vy1 = this.nodesProj[this.faces[i].nodes[a]][1];
 
@@ -230,13 +246,11 @@ function IsoView() {
 					var vx2 = this.nodesProj[this.faces[i].nodes[0]][0];
 					var vy2 = this.nodesProj[this.faces[i].nodes[0]][1];
 				}
-				// se le y dei 2 vertici sono uno < ed uno > della y:
+				// if the y of the 2 vertices aren't both < or both > the testing y:
 				if ((vy1 < y) != (vy2 < y)) {
-					// console.log("intersects");
-					// mi ricavo l'equaz. del segmento
+					// calculates slope of the line:
 					var m = (vx2 - vx1) / (vy2 - vy1);
-					// se nell'eq. impostando la y = y da testare, ottengo una x
-					// < di x da testare, diminuisco hit. Se è >=, la aumento:
+					// if substituing the testing y I have a x < testing x, decrease hit. Otherwise, increase it. 
 					var xTest = m * (y - vy1) + vx1;
 
 					if (xTest < x) {
@@ -246,8 +260,7 @@ function IsoView() {
 					}
 				}
 			}
-			// se alla fine dei test hit == 0, sono dentro. Altrimenti sono
-			// fuori:
+			// if after all tests hit == 0, (x, y) is inside, otherwise it's outside.
 			if (hit == 0) {
 				face = this.faces[i];
 				break;
@@ -256,7 +269,7 @@ function IsoView() {
 		if (face == null) {
 			return false;
 		}
-		// trova l'oggetto:
+		// finds the relative object:
 		for (var i = 0; i < this.objects.length; i++) {
 			for (var a = 0; a < this.objects[i].faces.length; a++) {
 				if (this.objects[i].faces[a] == face) {
@@ -272,6 +285,7 @@ function IsoView() {
 		};
 	}
 
+	// average point of a polygon.
 	this.average = function(obj) {
 		var n = obj.nodes.length;
 		var x = 0;
@@ -289,6 +303,7 @@ function IsoView() {
 		return [ x, y, z ];
 	};
 
+	// custom compare function for sorting
 	this.compare = function(a, b) {
 		pa = instance.average(a);
 		pb = instance.average(b);
@@ -307,6 +322,7 @@ function IsoView() {
 		return 0;
 	};
 
+	/* debug feature */
 	var display = function(arr) {
 		for (var i = 0; i < arr.length; i++) {
 			var p = average(arr[i]);
@@ -315,10 +331,12 @@ function IsoView() {
 		console.log("---");
 	};
 
+	/* debug feature */
 	var log = function(text) {
 		logDiv.innerHTML += text + "<br/>";
 	};
 
+	/* returns the normal of a face calculating its signed area. Normal faces the screen if area is > 0 */
 	this.normal = function(face) {
 		var x1 = this.nodesProj[face.nodes[0]][0];
 		var y1 = this.nodesProj[face.nodes[0]][1];
@@ -381,13 +399,9 @@ function IsoView() {
 			if (this.renderEdges) {
 				this.ctx.stroke();
 			}
-			// var p = average(faces[i]);
-			// log(i + ": " + faces[i].id + " - [" + p[0] + " " + p[1] + " " +
-			// p[2]
-			// + "] - " + normal(faces[i]));
 		}
 
-		/* VISUALIZZAZIONE IN PIANTA (DEBUG): */
+		/* TOP-DOWN (DEBUG): */
 
 		// for (var i = 0; i < n; i++) {
 		// ctx.beginPath();
@@ -404,7 +418,7 @@ function IsoView() {
 		// ctx.stroke();
 		// }
 		
-		/* VISUALIZZAZIONE NODI: */
+		/* NODES: */
 
 		if (this.renderNodes) {
 			this.ctx.fillStyle = this.nodeColor;
@@ -417,6 +431,10 @@ function IsoView() {
 
 	};
 
+	
+	/* creates a pattern from a source image. the id of the created pattern can be specified in the 'color' field of a face to fill
+	 * the polygon using the pattern instead of a solid color.
+	 */
 	this.createPattern = function(id, imgurl, scale) {
 		var image = new Image();
 		image.src = imgurl;
@@ -430,6 +448,9 @@ function IsoView() {
 		});
 	};
 
+	/* creates the canvas where all the graphics will be displayed. divId is the id of a div created in your html document.
+	 * w and h are the width and height dimensions of the canvas.
+	 */
 	this.createCanvas = function(divId, w, h) {
 
 		this.mainDiv = document.getElementById(divId);
@@ -459,6 +480,19 @@ function IsoView() {
 
 	};
 
+	
+	/** adds a 3D object to the canvas.
+	 * Format:
+	 * obj = {  'origin' : [x, y, z], (coordinates of the relative origin of this object)
+	 * 			'nodes' : [ [x, y, z], [x, y, z], [x, y, z], ... ] (array coordinates of the vertices of the object)
+	 * 			'faces' : [ { 									(array of objects with the following fields)
+	 * 							'id': string, 					(id of the face, for debug purposes only)
+	 * 							'nodes': [ 0, 1, 2, 3 ], 		(array of nodes id forming the face, in clockwise order. 
+	 * 															No need to specify the first node as last, the poly will be automatically closed)
+	 * 							'color' : string 				(color of the face. It can be a HTML color or a pattern id (see createPattern)
+	 * 						}, ... ]
+	 * 	}
+	 */
 	this.addObject = function(obj) {
 		var totalNodes = this.nodes.length;
 		for (var i = 0; i < obj.nodes.length; i++) {
