@@ -8,6 +8,7 @@ A simple, instantiable object that displays multiple 3D objects in isometric per
 It allows both solid and wireframe visualizations.
 
 ![Screenshot](screenshot2.JPG)
+![Screenshot](screenshot4.JPG)
 
 ## Usage
 Include the iso_view.js in your html file with at least 1 div:
