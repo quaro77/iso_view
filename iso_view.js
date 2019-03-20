@@ -312,24 +312,6 @@ function IsoView() {
 	// custom compare function for sorting
 	this.compare = function(a, b) {
 
-		z1 = [];
-		z2 = [];
-
-		for (var i = 0; i < a.nodes.length; i++) {
-			z1.push(instance.nodes[a.nodes[i]][2]);
-		}
-		for (var i = 0; i < b.nodes.length; i++) {
-			z2.push(instance.nodes[b.nodes[i]][2]);
-		}
-		
-		if (findMax(z1) < findMin(z2)) {
-			return -1;
-		}
-		
-		if (findMin(z1) > findMax(z2)) {
-			return 1;
-		}
-
 		pa = instance.average(a);
 		pb = instance.average(b);
 		if (pa[1] < pb[1])
@@ -341,9 +323,9 @@ function IsoView() {
 		if (pa[0] > pb[0])
 			return 1;
 		if (pa[2] < pb[2])
-			return -1;
-		if (pa[2] > pb[2])
 			return 1;
+		if (pa[2] > pb[2])
+			return -1;
 		return 0;
 	};
 
