@@ -1,7 +1,7 @@
 # IsoView
 ## 3D Isometric viewer utility in Javascript / HTML 5
 
-![Screenshot](screenshot1.JPG)
+![Screenshot](screenshot3.JPG)
 
 A simple, instantiable object that displays multiple 3D objects in isometric perspective with pan, zoom and rotation functions. It includes a hit function callable from a custom click event listener.
 
