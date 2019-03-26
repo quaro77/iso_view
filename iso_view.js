@@ -21,6 +21,7 @@ function IsoView() {
 	this.backgroundColor = '#ffffff';
 	this.nodeColor = '#10aa20';
 	this.edgeColor = '#1020cc';
+	this.selectedEdgeColor = '#ff0000';
 	this.nodeSize = 4;
 	this.matrix = null;
 	this.canvas = null;
@@ -39,6 +40,8 @@ function IsoView() {
 	this.renderPolys = true;
 	this.renderEdges = true;
 	this.renderNodes = false;
+	this.selectedObjects = [];
+	this.drawSelected = true;
 	var instance = this;
 
 	this.setScale = function(s) {
@@ -132,6 +135,7 @@ function IsoView() {
 			src.panY += event.y - src.prevMouseY;
 			src.draw();
 			src.mouseDragged = true;
+			//console.log("qui");
 		} else {
 			src.mouseDragged = false;
 		}
@@ -206,16 +210,53 @@ function IsoView() {
 		return [ node[0] * cos(angle) - node[1] * sin(angle), node[1] * cos(angle) + node[0] * sin(angle) ];
 	};
 
+	/* adds an object to the selectedObjects array */
+	this.addToSelected = function(obj) {
+		this.selectedObjects.push(obj);
+		obj.isSelected = true;
+	}
+
+	/* adds an object to the selectedObjects array */
+	this.clearSelected = function() {
+		for (var i = 0; i < this.selectedObjects.length; i++) {
+			this.selectedObjects[i].isSelected = false;
+		}
+		this.selectedObjects = [];
+	}
+
+	/* removes an object from the selectedObjects array */
+	this.removeFromSelected = function(obj) {
+		var s = [];
+		for (var i = 0; i < this.selectedObjects.length; i++) {
+			if (this.selectedObjects[i] != obj) {
+				s.push(this.selectedObjects[i]);
+			}
+		}
+		obj.isSelected = false;
+		this.selectedObjects = s;
+	}
+
+	/* searched for the object related to a face */
+	this.findObjectFromFace = function(face) {
+		// finds the relative object:
+		for (var i = 0; i < this.objects.length; i++) {
+			for (var a = 0; a < this.objects[i].faces.length; a++) {
+				if (this.objects[i].faces[a] == face) {
+					return this.objects[i];
+				}
+			}
+		}
+		return null;
+	}
+
 	/*
 	 * performs a check point x, y. If the point is inside a polygon it returns
 	 * the face it's inside and the object it belongs to. Otherwise it returns
 	 * false
 	 */
 	this.checkHit = function(x, y) {
-
 		x = x - this.canvasCenterX - this.panX;
 		y = y - this.canvasCenterY - this.panY;
-
 		face = null;
 		obj = null;
 		// for every face:
@@ -273,17 +314,10 @@ function IsoView() {
 			}
 		}
 		if (face == null) {
+			console.log("false");
 			return false;
 		}
-		// finds the relative object:
-		for (var i = 0; i < this.objects.length; i++) {
-			for (var a = 0; a < this.objects[i].faces.length; a++) {
-				if (this.objects[i].faces[a] == face) {
-					obj = this.objects[i];
-					break;
-				}
-			}
-		}
+		obj = this.findObjectFromFace(face);
 
 		return {
 			'face' : face,
@@ -377,9 +411,21 @@ function IsoView() {
 		this.ctx.fillStyle = this.backgroundColor;
 		this.ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
 
+		this.ctx.lineWidth = 1;
 		this.ctx.strokeStyle = this.edgeColor;
+
 		for (var i = 0; i < n; i++) {
 
+			if (this.drawSelected) {
+				var obj = this.findObjectFromFace(this.faces[i]);
+				if (obj.isSelected) {
+					this.ctx.lineWidth = 3;
+					this.ctx.strokeStyle = this.selectedEdgeColor;
+				} else {
+					this.ctx.lineWidth = 1;
+					this.ctx.strokeStyle = this.edgeColor;
+				}
+			}
 			if (this.renderPolys && !this.normal(this.faces[i])) {
 				continue;
 			}
@@ -519,6 +565,7 @@ function IsoView() {
 			}
 			this.faces.push(obj.faces[i]);
 		}
+		obj.isSelected = false;
 		this.objects.push(obj);
 	};
 }
