@@ -122,74 +122,73 @@ function createObjects() {
 				color : "#b2b2b2"
 			}, {
 				id : "top1",
-				nodes : [ 7,6,31,30 ],
+				nodes : [ 7, 6, 31, 30 ],
 				color : "#b2b2b2"
-			}			, {
+			}, {
 				id : "top2",
-				nodes : [ 8,7,30,29 ],
+				nodes : [ 8, 7, 30, 29 ],
 				color : "#b2b2b2"
 			}, {
 				id : "top1",
-				nodes : [ 9,8,29,28 ],
+				nodes : [ 9, 8, 29, 28 ],
 				color : "#b2b2b2"
 			}, {
 				id : "top1",
-				nodes : [ 10,9,28,27 ],
+				nodes : [ 10, 9, 28, 27 ],
 				color : "#b2b2b2"
 			}, {
 				id : "top1",
-				nodes : [ 11,10,27,26 ],
+				nodes : [ 11, 10, 27, 26 ],
 				color : "#b2b2b2"
 			}, {
 				id : "top1",
-				nodes : [ 12,11,26,25 ],
+				nodes : [ 12, 11, 26, 25 ],
 				color : "#b2b2b2"
 			}, {
 				id : "top1",
-				nodes : [ 13,12,25,24 ],
+				nodes : [ 13, 12, 25, 24 ],
 				color : "#b2b2b2"
 			}, {
 				id : "a0",
-				nodes : [ 18,35,2,1 ],
+				nodes : [ 18, 35, 2, 1 ],
 				color : "#b2b2b2"
 			}, {
 				id : "a1",
-				nodes : [ 35,34,3,2 ],
+				nodes : [ 35, 34, 3, 2 ],
 				color : "#b2b2b2"
 			}, {
 				id : "a2",
-				nodes : [ 34,33,4,3 ],
+				nodes : [ 34, 33, 4, 3 ],
 				color : "#b2b2b2"
 			}, {
 				id : "a3",
-				nodes : [ 7,6,31,30 ],
+				nodes : [ 7, 6, 31, 30 ],
 				color : "#b2b2b2"
 			}, {
 				id : "a4",
-				nodes : [ 0,17,20,19 ],
+				nodes : [ 0, 17, 20, 19 ],
 				color : "#b2b2b2"
 			}, {
 				id : "a5",
-				nodes : [ 17,16,21,20 ],
+				nodes : [ 17, 16, 21, 20 ],
 				color : "#b2b2b2"
 			}, {
 				id : "a6",
-				nodes : [ 16,15,22,21 ],
+				nodes : [ 16, 15, 22, 21 ],
 				color : "#b2b2b2"
 			}, {
 				id : "a7",
-				nodes : [ 15,14,23,22 ],
+				nodes : [ 15, 14, 23, 22 ],
 				color : "#b2b2b2"
 			}, {
-			 id : "side0",
-			 nodes : [ 14,13,24,23 ],
-			 color : "#b2b2b2"
-			 }, {
-			 id : "side0",
-			 nodes : [ 32,31,6,5 ],
-			 color : "#b2b2b2"
-			 }
-			]
+				id : "side0",
+				nodes : [ 14, 13, 24, 23 ],
+				color : "#b2b2b2"
+			}, {
+				id : "side0",
+				nodes : [ 32, 31, 6, 5 ],
+				color : "#b2b2b2"
+			} ]
 		};
 
 		iso1.addObject(base);
@@ -214,4 +213,18 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
 	createObjects();
 
+	iso1.canvas.onclick = function(event) {
+		var hit = null;
+		if (!iso1.mouseDragged) {
+			hit = iso1.checkHit(event.offsetX, event.offsetY);
+			if (hit) {
+				iso1.clearSelected();
+				iso1.addToSelected(hit.object);
+				iso1.draw();
+			} else {
+				iso1.clearSelected();
+				iso1.draw();
+			}
+		}
+	}
 });
