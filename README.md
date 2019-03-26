@@ -2,12 +2,11 @@
 ## 3D Isometric viewer utility in Javascript / HTML 5
 
 ![Screenshot](bridge.gif)
-![Screenshot](screenshot5.JPG)
 
 A simple, instantiable object that displays multiple 3D objects in isometric perspective with pan, zoom and rotation functions. It includes a hit function callable from a custom click event listener.
 
 It allows both solid and wireframe visualizations.
-
+![Screenshot](screenshot5.JPG)
 ![Screenshot](screenshot2.JPG)
 ![Screenshot](screenshot4.JPG)
 
