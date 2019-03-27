@@ -88,10 +88,9 @@ setEdgeColor(color):
 addObject(object):
 	A 3D shape will be added to the IsoView. 
 	A shape is described by an array of nodes; each node is an array of float values indicating its x, y, z coordinates: [x, y, z].
-	
 	The shape objects has and an array of faces connecting the nodes.
-	When the array of nodes of a face, it is important to list them in clockwise order for correct display.
-	
+	When declaring the array of nodes of a face, it is important to list them in clockwise order for correct display.
+```	
 	Object format:
 	
 	{
@@ -103,7 +102,7 @@ addObject(object):
 			color : "#rrggbb"
 		}, etc... ]
 	};
-	
+```	
 	'origin': the starting coordinates of the object. All nodes will be translated by the amount specified here.
 	This is very useful in case of multiple identical objects placed in different positions: there is no need to recalculate the position
 	of each node, it is possible to just specify a different origin point.
