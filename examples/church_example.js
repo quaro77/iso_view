@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	iso2 = new IsoView();
 
 	iso1.createCanvas("main", 1200, 600);
-	iso1.setRenderStyle("solid,edges");
+	iso1.setRenderStyle("shaded,edges");
 	iso1.createPattern("roof", "../images/roof.jpg", 0.025);
 
 	iso2.createCanvas("main2", 800, 600);

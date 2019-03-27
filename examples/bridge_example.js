@@ -35,7 +35,7 @@ function createObjects() {
 			} ]
 		};
 
-		var pila = {
+		var column = {
 			'origin' : [ i, 0, 0 ],
 			'nodes' : [ [ -2, -2, 2.1 ], [ -2, -2, 6 ], [ 2, -2, 6 ], [ 2, -2, 2.1 ], [ 2, 2, 2.1 ], [ 2, 2, 6 ], [ -2, 2, 6 ], [ -2, 2, 2.1 ] ],
 			'faces' : [ {
@@ -57,7 +57,7 @@ function createObjects() {
 			} ]
 		};
 
-		var arco = {
+		var arc = {
 			'origin' : [ i, 0, 0 ],
 			'nodes' : [ [ 2, -2, 6 ], [ -2, -2, 6 ], [ -3, -2, 8 ], [ -5, -2, 10 ], [ -7, -2, 11 ], [ -9, -2, 11 ], [ -9, -2, 13 ], [ -7, -2, 13 ],
 					[ -5, -2, 13 ], [ -3, -2, 13 ], [ 3, -2, 13 ], [ 5, -2, 13 ], [ 7, -2, 13 ], [ 9, -2, 13 ], [ 9, -2, 11 ], [ 7, -2, 11 ],
@@ -192,22 +192,20 @@ function createObjects() {
 		};
 
 		iso1.addObject(base);
-		iso1.addObject(pila);
-		iso1.addObject(arco);
+		iso1.addObject(column);
+		iso1.addObject(arc);
 
 	}
 
 }
 
-// ESEMPIO:
+// EXAMPLE:
 document.addEventListener("DOMContentLoaded", function(event) {
-
-	// logDiv = document.getElementById("log");
 
 	iso1 = new IsoView();
 
 	iso1.createCanvas("main", 800, 600);
-	iso1.setRenderStyle("solid,edges");
+	iso1.setRenderStyle("shaded,edges");
 	iso1.setBackground("#56585d");
 	iso1.createPattern("terrain", "../images/terrain_gray.jpg", 0.01);
 

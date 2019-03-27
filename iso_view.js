@@ -38,11 +38,14 @@ function IsoView() {
 	this.panX = 0;
 	this.panY = 0;
 	this.renderPolys = true;
+	this.renderShaded = true;
 	this.renderEdges = true;
 	this.renderNodes = false;
 	this.selectedObjects = [];
 	this.drawSelected = true;
 	var instance = this;
+
+	var lightVector = [ 1.0, 0.0, -0.5 ];
 
 	this.setScale = function(s) {
 		this.scale = s;
@@ -75,8 +78,13 @@ function IsoView() {
 		this.renderEdges = false;
 		this.renderNodes = false;
 
+		if (c.includes("shaded")) {
+			this.renderPolys = true;
+			this.renderShaded = true;
+		}
 		if (c.includes("solid")) {
 			this.renderPolys = true;
+			this.renderShaded = false;
 		}
 		if (c.includes("edges")) {
 			this.renderEdges = true;
@@ -101,6 +109,48 @@ function IsoView() {
 		return Math.cos(a);
 	};
 
+	/* subtracts 2 3D vectors and returns the resulting vector */
+	var subtractVector = function(v1, v2) {
+		return [ v1[0] - v2[0], v1[1] - v2[1], v1[2] - v2[2] ];
+	}
+
+	/* divides a 3D vectors for a scalar and returns the resulting vector */
+	var divideVector = function(v1, s) {
+		return [ v1[0] / s, v1[1] / s, v1[2] / s ];
+	}
+
+	/* finds the magnitude of a 3D vector */
+	var magnitude = function(v) {
+		return Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+	}
+
+	/*
+	 * computes the cross product of 2 3D vectors and returns the resulting
+	 * vector
+	 */
+	var cross = function(v1, v2) {
+		var res = [];
+		res[0] = v1[1] * v2[2] - v1[2] * v2[1]; // x -> yz - zy
+		res[1] = v1[2] * v2[0] - v1[0] * v2[2]; // y -> zx - xz
+		res[2] = v1[0] * v2[1] - v1[1] * v2[0]; // x -> xy - yx
+		return res;
+	}
+
+	/* computes the dot product of 2 3D vectors and returns the resulting scalar */
+	var dot = function(v1, v2) {
+		return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
+	}
+
+	var limit = function(v, inf, sup) {
+		if (v < inf) {
+			return inf;
+		}
+		if (v > sup) {
+			return sup;
+		}
+		return v;
+	}
+
 	var findMin = function(array) {
 		var min = array[0];
 
@@ -123,6 +173,38 @@ function IsoView() {
 		return max;
 	}
 
+	var hex = {
+		"0" : 0,
+		"1" : 1,
+		"2" : 2,
+		"3" : 3,
+		"4" : 4,
+		"5" : 5,
+		"6" : 6,
+		"7" : 7,
+		"8" : 8,
+		"9" : 9,
+		"a" : 10,
+		"b" : 11,
+		"c" : 12,
+		"d" : 13,
+		"e" : 14,
+		"f" : 15,
+	}
+
+	var convertHTMLtoRGB = function(color) {
+		var c = [];
+		var res = [ 0, 0, 0 ];
+		c[0] = color.substring(1, 3);
+		c[1] = color.substring(3, 5);
+		c[2] = color.substring(5, 7);
+		for (var i = 0; i < 3; i++) {
+			res[i] = hex[c[i][0]] * 10;
+			res[i] += hex[c[i][1]];
+		}
+		return res;
+	}
+
 	var mouseMoveCanvas = function(event) {
 		event.preventDefault();
 		var src = event.srcElement.objectRef;
@@ -135,7 +217,6 @@ function IsoView() {
 			src.panY += event.y - src.prevMouseY;
 			src.draw();
 			src.mouseDragged = true;
-			//console.log("qui");
 		} else {
 			src.mouseDragged = false;
 		}
@@ -163,6 +244,10 @@ function IsoView() {
 		var src = event.srcElement.objectRef;
 		src.mouseDown1 = false;
 		src.mouseDown2 = false;
+
+		/* calculates dot product (light, face) */
+		var face = src.searchFace("f0");
+		src.computeShading(face);
 	};
 
 	var mouseRightClickCanvas = function(event) {
@@ -205,9 +290,26 @@ function IsoView() {
 		}
 	};
 
+	/* computes the shading factor of a face. Value from -1 to 1 */
+	this.computeShading = function(face) {
+		var n = this.normal3d(face);
+
+		return divideVector(n, magnitude(n))[0];
+
+		/*
+		 * simple shading based on the x component of normal vector of the face;
+		 * shading is based on the orientation angle of the face. for better
+		 * shading compute the dot product between lightVector and face normal,
+		 * as follows:
+		 */
+		// n = divideVector(n, magnitude(n));
+		// var d = dot(lightVector, n);
+		// return d;
+	}
+
 	/* rotates a vertex around the z axes */
 	var rotate = function(node, angle) {
-		return [ node[0] * cos(angle) - node[1] * sin(angle), node[1] * cos(angle) + node[0] * sin(angle) ];
+		return [ node[0] * cos(angle) - node[1] * sin(angle), node[1] * cos(angle) + node[0] * sin(angle), node[2] ];
 	};
 
 	/* adds an object to the selectedObjects array */
@@ -236,7 +338,7 @@ function IsoView() {
 		this.selectedObjects = s;
 	}
 
-	/* searched for the object related to a face */
+	/* searches for the object related to a face */
 	this.findObjectFromFace = function(face) {
 		// finds the relative object:
 		for (var i = 0; i < this.objects.length; i++) {
@@ -244,6 +346,16 @@ function IsoView() {
 				if (this.objects[i].faces[a] == face) {
 					return this.objects[i];
 				}
+			}
+		}
+		return null;
+	}
+
+	/* searches for a face with the given id */
+	this.searchFace = function(id) {
+		for (var i = this.faces.length - 1; i >= 0; i--) {
+			if (this.faces[i].id == id) {
+				return this.faces[i];
 			}
 		}
 		return null;
@@ -314,7 +426,6 @@ function IsoView() {
 			}
 		}
 		if (face == null) {
-			console.log("false");
 			return false;
 		}
 		obj = this.findObjectFromFace(face);
@@ -378,10 +489,26 @@ function IsoView() {
 	};
 
 	/*
-	 * returns the normal of a face calculating its signed area. Normal faces
+	 * returns the normal of a 3d face calculating its signed area. Normal faces
 	 * the screen if area is > 0
 	 */
-	this.normal = function(face) {
+	this.normal3d = function(face) {
+
+		var p1 = rotate(this.nodes[face.nodes[0]], this.theta);
+		var p2 = rotate(this.nodes[face.nodes[1]], this.theta);
+		var p3 = rotate(this.nodes[face.nodes[2]], this.theta);
+
+		var u = subtractVector(p1, p2);
+		var v = subtractVector(p1, p3);
+
+		return cross(u, v);
+	};
+
+	/*
+	 * returns the normal of a 2d face calculating its signed area. Normal faces
+	 * the screen if area is > 0
+	 */
+	this.normal2d = function(face) {
 		var x1 = this.nodesProj[face.nodes[0]][0];
 		var y1 = this.nodesProj[face.nodes[0]][1];
 		var area = 0;
@@ -399,6 +526,7 @@ function IsoView() {
 	};
 
 	this.draw = function(n) {
+
 		this.isoTransform();
 
 		if (this.renderPolys) {
@@ -426,16 +554,34 @@ function IsoView() {
 					this.ctx.strokeStyle = this.edgeColor;
 				}
 			}
-			if (this.renderPolys && !this.normal(this.faces[i])) {
+			if (this.renderPolys && !this.normal2d(this.faces[i])) {
 				continue;
 			}
-
+			var overlayPoly = null;
 			if (this.renderPolys) {
 				if (this.patterns[this.faces[i].color] != undefined) {
 					this.patterns[this.faces[i].color].setTransform(this.matrix.scale(this.scale * this.patterns[this.faces[i].color].scale));
 					this.ctx.fillStyle = this.patterns[this.faces[i].color];
+					if (this.renderShaded) {
+						var val = this.computeShading(this.faces[i]);
+						overlayPoly = (val + 1) * 127;
+					}
+
 				} else {
-					this.ctx.fillStyle = this.faces[i].color;
+					if (this.renderShaded) {
+						var color = [ this.faces[i].colorRGB[0], this.faces[i].colorRGB[1], this.faces[i].colorRGB[2] ];
+						var val = this.computeShading(this.faces[i]);
+						color[0] *= val + 1.8;
+						color[1] *= val + 1.8;
+						color[2] *= val + 1.8;
+						color[0] = limit(Math.round(color[0]), 0, 255);
+						color[1] = limit(Math.round(color[1]), 0, 255);
+						color[2] = limit(Math.round(color[2]), 0, 255);
+						this.ctx.fillStyle = "rgb(" + color[0] + "," + color[1] + "," + color[2] + ")";
+					} else {
+						this.ctx.fillStyle =  this.faces[i].color;
+					}
+					
 				}
 			}
 
@@ -452,6 +598,22 @@ function IsoView() {
 			if (this.renderPolys) {
 				this.ctx.fill();
 			}
+
+			if (overlayPoly != null) {
+				this.ctx.beginPath();
+				this.ctx.moveTo(this.canvasCenterX + this.panX + this.nodesProj[this.faces[i].nodes[0]][0], this.canvasCenterY + this.panY
+						+ this.nodesProj[this.faces[i].nodes[0]][1]);
+				for (var a = 1; a < this.faces[i].nodes.length; a++) {
+					this.ctx.lineTo(this.canvasCenterX + this.panX + this.nodesProj[this.faces[i].nodes[a]][0], this.canvasCenterY + this.panY
+							+ this.nodesProj[this.faces[i].nodes[a]][1]);
+
+				}
+				this.ctx.closePath();
+				this.ctx.fillStyle = "rgba(" + overlayPoly + "," + overlayPoly + "," + overlayPoly + ",0.5)";
+				this.ctx.fill();
+
+			}
+
 			if (this.renderEdges) {
 				this.ctx.stroke();
 			}
@@ -484,7 +646,6 @@ function IsoView() {
 				this.ctx.fill();
 			}
 		}
-
 	};
 
 	/*
@@ -513,7 +674,6 @@ function IsoView() {
 	this.createCanvas = function(divId, w, h) {
 
 		this.mainDiv = document.getElementById(divId);
-
 		this.canvas = document.createElement('canvas');
 		this.canvas.setAttribute("id", "svgCanvas");
 		this.canvas.setAttribute("width", w);
@@ -562,6 +722,12 @@ function IsoView() {
 
 			for (var a = 0; a < obj.faces[i].nodes.length; a++) {
 				obj.faces[i].nodes[a] += totalNodes;
+			}
+
+			if (obj.faces[i].color.startsWith("#")) {
+				obj.faces[i].colorRGB = convertHTMLtoRGB(obj.faces[i].color);
+			} else {
+				obj.faces[i].colorRGB = [ 0, 0, 0 ];
 			}
 			this.faces.push(obj.faces[i]);
 		}
