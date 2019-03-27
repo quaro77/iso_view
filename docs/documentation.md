@@ -2,6 +2,7 @@ QUICKSTART GUIDE:
 
 1. Create an HTML file including iso_view.js, your script file (my_js.js), and a div in which the canvas will be shown:
 
+```
 <!DOCTYPE html>
 <html>
 <head>
@@ -14,21 +15,22 @@ QUICKSTART GUIDE:
 	<div id='main' style='width: 800px; height: 600px; border: 1px solid black; margin: auto;'></div>
 </body>
 </html>
+```
 
 2. In your script file instantiate an IsoView object:
-
+```
 document.addEventListener("DOMContentLoaded", function(event) {
 	iso1 = new IsoView();
 }
-
+```
 3. Setup your canvas and global attributes:
-
+```
 	iso1.createCanvas("main", 800, 600);
 	iso1.setRenderStyle("shaded,edges");
 	iso1.setBackground("#56585d");
-	
+```
 4. Add an object to your IsoView:
-	
+```	
 	var shape = {
 		'origin' : [ i, 0, 0 ],
 		'nodes' : [ [ -2, -2, 2.1 ], [ -2, -2, 6 ], [ 2, -2, 6 ], [ 2, -2, 2.1 ], [ 2, 2, 2.1 ], [ 2, 2, 6 ], [ -2, 2, 6 ], [ -2, 2, 2.1 ] ],
@@ -52,12 +54,11 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	};
 	
 	iso1.addObject(base);
-	
+```	
 5. Refresh your view:
-	
+```	
 	iso1.draw();
-	
-	
+```	
 Methods documentation:
 
 createCanvas(divId, width, height):
