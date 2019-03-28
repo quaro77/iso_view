@@ -1,4 +1,6 @@
-# QUICKSTART GUIDE:
+# USER MANUAL
+
+## QUICKSTART GUIDE:
 
 1. Create an HTML file including iso_view.js, your script file (my_js.js), and a div in which the canvas will be shown:
 
@@ -59,9 +61,37 @@ document.addEventListener("DOMContentLoaded", function(event) {
 ```
 	iso1.draw();
 ```
-# Methods documentation:
 
-createCanvas(divId, width, height):
+
+## ADVANCED USE
+
+### Handle mouse click
+You can select one or multiple objects by clicking on them. In order to accomplish this task, just add a custom click listener to the
+canvas object inside your IsoView instance:
+
+```
+iso1.canvas.onclick = function(event) {
+	var hit = null;
+	if (!iso1.mouseDragged) {
+		hit = iso1.checkHit(event.offsetX, event.offsetY);
+		if (hit) {
+			iso1.clearSelected();
+			iso1.addToSelected(hit.object);
+			iso1.draw();
+		} else {
+			iso1.clearSelected();
+			iso1.draw();
+		}
+	}
+}
+```
+In this example the checkHit() method is used to check if one of the 3D is drawn at the mouse location. If the test is positive, the object is returned and added to the Selected Objects array. The array is cleared eached time, but it is also possible to simply add more objects, allowing for multiple selection.
+The mouseDragged boolean variable checks if the mouse was dragged while clicking, avoiding the selection in that case.
+
+
+## METHODS DESCRIPTION:
+
+### createCanvas(divId, width, height):
 Creates a canvas inside the div with id = divId, where the 3D view will be shown.
 The canvas will have dimensions width x height.
 This function should be called just once after the IsoView object is created.
@@ -84,6 +114,15 @@ All nodes will be rendered with the specified color (if "nodes" option was set i
 
 ### setEdgeColor(color):
 All edges will be rendered with the specified color (if "nodes" option was set in setRenderStyle). HTML colors on the format "#rrggbb" are accepted.
+
+### setCenter(x, y):
+Sets the offset of the canvas center. Default values are (0, 0), and the center is calculated at half width and half height of the canvas. All rotation and zoom functions will be calculated based on this center point.
+
+### setPan(x, y):
+Sets the panning position of the rendered objects. Default values are (0, 0) and they are influenced by mouse dragging while pressing the left button.
+
+### setScale(scale):
+Sets the scale of the rendered object. Default value is 20, and it is influenced by mouse wheel actions. This method could be used to set a starting scale or to implement zoom buttons on screen.
 
 ### addObject(object):
 A 3D shape will be added to the IsoView. 
@@ -125,3 +164,18 @@ A pattern will be created from the image file declared in the 'imageUrl' paramet
 	
 A face can be filled with a pattern instead of a solid color. The pattern id needs to be specified in the 'color' field of the face in place of the html color string.
 Please not that a pattern does not behave like a texture: it is not mapped and projected on faces, it is just displayed with the same angle on each face.
+
+### checkHit(x, y):
+Checks if a face is drawn at the provided screen location. It returns false if no face was found, and a result object in case of positive result.
+The result object has the following fields:
+'face': the face object found.
+'object': the 3d object to which the face belongs.
+
+### addToSelected(object):
+Adds the specified 3D object to the Selected array. All the objects in this array will be rendered with thicker, differently colored edges. 
+
+### removeFromSelected(object):
+Removes the selected object from the Selected array if it is present, does nothing in case it is not found.
+
+### clearSelected():
+Clears the Selected array, making it empty.
