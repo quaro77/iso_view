@@ -85,7 +85,7 @@ iso1.canvas.onclick = function(event) {
 	}
 }
 ```
-In this example the checkHit() method is used to check if one of the 3D is drawn at the mouse location. If the test is positive, the object is returned and added to the Selected Objects array. The array is cleared eached time, but it is also possible to simply add more objects, allowing for multiple selection.
+In this example the checkHit() method is used to check if one of the 3D is drawn at the mouse location. If the test is positive, the object is returned and added to the SelectedObjects array. The array is cleared each time, but it is also possible to simply add more objects, allowing for multiple selection.
 The mouseDragged boolean variable checks if the mouse was dragged while clicking, avoiding the selection in that case.
 
 
@@ -172,10 +172,10 @@ The result object has the following fields:
 'object': the 3d object to which the face belongs.
 
 ### addToSelected(object):
-Adds the specified 3D object to the Selected array. All the objects in this array will be rendered with thicker, differently colored edges. 
+Adds the specified 3D object to the selectedObjects array. All the objects in this array will be rendered with thicker, differently colored edges. 
 
 ### removeFromSelected(object):
-Removes the selected object from the Selected array if it is present, does nothing in case it is not found.
+Removes the selected object from the selectedObjects array if it is present, does nothing in case it is not found.
 
 ### clearSelected():
-Clears the Selected array, making it empty.
+Clears the selectedObjects array.
