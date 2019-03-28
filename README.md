@@ -13,9 +13,10 @@ It allows both solid and wireframe visualizations.
 ## Usage
 Include the iso_view.js in your html file with at least 1 div:
 
-`<script type="text/javascript" src="./iso_view.js"></script>`
-
-`<div id='main' style='width: 1200px; height: 600px; border: 1px solid black; margin: auto;'></div>`
+```
+<script type="text/javascript" src="./iso_view.js"></script>
+<div id='main' style='width: 1200px; height: 600px; border: 1px solid black; margin: auto;'></div>
+```
 
 In your javascript code, instantiate an IsoView() object:
 
@@ -27,21 +28,15 @@ The main function will create a canvas object inside the selected div:
 
 You can now add 3D objects in the following format:
 
-`var obj = {`
-
-`'origin' : [ x, y, z ],`
-
-`'nodes' : [ [ x0, y0, z0 ], [ x1, y1, z1 ], [ x2, y2, z2 ], etc. ],`
-
-`'faces' : [`
-
-`{ id : 'face0', nodes : [ 0, 1, 2, 3, etc. ], color : '#edd594'},`
-
-`{ id : 'face1', nodes : [ 4, 5, 6, 7, etc.], color : '#edd594'},`
-
-`etc.]`
-
-`}`
+```var obj = {
+'origin' : [ x, y, z ],
+'nodes' : [ [ x0, y0, z0 ], [ x1, y1, z1 ], [ x2, y2, z2 ], etc. ],
+'faces' : [
+{ id : 'face0', nodes : [ 0, 1, 2, 3, etc. ], color : '#edd594'},
+{ id : 'face1', nodes : [ 4, 5, 6, 7, etc.], color : '#edd594'},
+etc.]
+}
+```
  
  Using the addObject function:
  
