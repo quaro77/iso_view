@@ -155,6 +155,7 @@ Every face of the object is a sub-object with the following properties:
 'color': the color of the face; this can be both an html color in #rrggbb form, or a pattern id. (See createPattern())
 	
 Please note that long faces can create z-fighting problems depending on their rotation, so please consider splitting long surfaces in smaller polygons.
+The method modifies some of the properties of the passed object (i.e. vertex coordinates), so it would be wise to create a copy of the object before adding it to the IsoView instance.
 	
 ### createPattern(id, imageUrl, scale):
 A pattern will be created from the image file declared in the 'imageUrl' parameter.
@@ -179,3 +180,6 @@ Removes the selected object from the selectedObjects array if it is present, doe
 
 ### clearSelected():
 Clears the selectedObjects array.
+
+### clear():
+Clears the View removing all objects, faces and nodes from the instance. Please note that on order to re-add an object that was previously in the view you need to re-define it, because the addObject() method changes some of the properties of the added object.
