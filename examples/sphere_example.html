@@ -10,8 +10,25 @@
 	</script>
 	<script type="text/javascript" src="../iso_view.js"></script>
 	<script type="text/javascript" src="./sphere_example.js"></script>
-	
-	<div id='main' style='width: 1200px; height: 600px; border: 1px solid black; margin: auto;'></div>
-	<div id='main2' style='width: 1200px; height: 600px; border: 1px solid black; margin: auto;'></div>
+	<div id='input' style='width: 1200px; height: 100px; border: 0px; margin: auto;'>
+		<div id='input' style='width: 150px;float-right;display:inline-block; border: 0px;'>
+			Center 
+			<br />
+			<input type="text" id="x-center" value="0" style="width:50px" /> X 
+			<br />
+			<input type="text" id="y-center" value="0" style="width:50px" /> Y
+			<br />			
+			<input type="text" id="z-center" value="0" style="width:50px" /> Z
+			<br />
+			<input type="text" id="radius" value="8" style="width:50px" /> Radius
+			<br />
+			<input type="text" id="sections" value="20" style="width:50px" /> Sections 
+			<input type="button" value = "Try It" onclick="tryIt();" />
+		</div>
+		<div id="render" style="float:left">
+			<div id='main' style='width: 1000px; height: 600px; border: 1px solid black; margin: auto;'></div>
+			<div id='main2' style='width: 1000px; height: 600px; border: 1px solid black; margin: auto;'></div>
+		</div>
+	</div>
 </body>
 </html>

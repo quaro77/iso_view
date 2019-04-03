@@ -1,6 +1,6 @@
 
 
-
+var iso1, iso2;
 
 function sphere(radius, center, sectors){
 	
@@ -19,15 +19,15 @@ function sphere(radius, center, sectors){
 		for(var i=0;i<sectors;i++){ // horizontal cycle
 			coeff=1;
 			//top node
-			nodes.push([coeff * (center[0] + radius * iso2.cos(i * horDegrees) * iso2.cos(j * verDegrees)), 
+			nodes.push([center[0] + coeff * (radius * iso2.cos(i * horDegrees) * iso2.cos(j * verDegrees)), 
 						center[1] + radius * iso2.sin(i * horDegrees) * iso2.cos(j * verDegrees),
-						coeff * (center[2] + radius * iso2.sin(j * verDegrees))]);
+						center[2] + coeff * (radius * iso2.sin(j * verDegrees))]);
 			parallelTop.push(n++);
 			//bottom node
 			coeff = -1;
-			nodes.push([coeff * (center[0] + radius * iso2.cos(i * horDegrees) * iso2.cos(j * verDegrees)), 
+			nodes.push([center[0] + coeff * (radius * iso2.cos(i * horDegrees) * iso2.cos(j * verDegrees)), 
 						center[1] + radius * iso2.sin(i * horDegrees) * iso2.cos(j * verDegrees),
-						coeff * (center[2] + radius * iso2.sin(j * verDegrees))]);
+						center[2] + coeff * (radius * iso2.sin(j * verDegrees))]);
 			parallelBot.push(n++);
 		}
 		if(previousParallelTop.length >0){
@@ -59,10 +59,10 @@ function sphere(radius, center, sectors){
 	}
 	//vertex
 	coeff=1;
-	nodes.push([center[0], center[1], coeff * (center[2] + radius)]);
+	nodes.push([center[0], center[1], center[2] + coeff * radius]);
 	n++;
 	coeff=-1;
-	nodes.push([center[0], center[1], coeff * (center[2] + radius)]);
+	nodes.push([center[0], center[1], center[2] + coeff * radius]);
 	n++;
 	
 	//top and bottom triangular faces
@@ -103,7 +103,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	iso1 = new IsoView();
 	iso2 = new IsoView();
 
-	iso1.createCanvas("main", 1200, 600);
+	iso1.createCanvas("main", 1000, 600);
 	iso1.setRenderStyle("shaded,edges");
 	iso1.createPattern("roof", "../images/roof.jpg", 0.025);
 
@@ -135,3 +135,44 @@ document.addEventListener("DOMContentLoaded", function(event) {
 		}
 	}
 });
+
+function tryIt(){
+	var center = [1 * document.getElementById("x-center").value,1 * document.getElementById("y-center").value,1 * document.getElementById("z-center").value];
+	var radius = 1 * document.getElementById("radius").value;
+	var sections = 1 * document.getElementById("sections").value;
+	
+	document.getElementById("main").innerHTML = "";
+	document.getElementById("main2").innerHTML = "";
+	
+	iso1 = new IsoView();
+	iso2 = new IsoView();
+
+	iso1.createCanvas("main", 1000, 600);
+	iso1.setRenderStyle("shaded,edges");
+	iso1.createPattern("roof", "../images/roof.jpg", 0.025);
+
+	iso2.createCanvas("main2", 800, 600);
+	iso2.setRenderStyle("edges");
+	iso2.createPattern("roof", "../images/roof.jpg", 0.05);
+
+	
+	var complete=sphere(radius,center,sections);
+	iso1.addObject(complete);
+	
+	
+	
+	iso1.canvas.onclick = function(event) {
+		var hit = null;
+		if (!iso1.mouseDragged) {
+			hit = iso1.checkHit(event.offsetX, event.offsetY);
+			if (hit) {
+				iso1.clearSelected();
+				iso1.addToSelected(hit.object);
+				iso1.draw();
+			} else {
+				iso1.clearSelected();
+				iso1.draw();
+			}
+		}
+	}
+}
