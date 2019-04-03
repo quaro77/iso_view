@@ -108,6 +108,9 @@ function IsoView() {
 		a = a * 0.01745329252;
 		return Math.cos(a);
 	};
+	/* Make cos and sin usable from outside*/
+	this.sin = sin;
+	this.cos = cos;
 
 	/* subtracts 2 3D vectors and returns the resulting vector */
 	var subtractVector = function(v1, v2) {
