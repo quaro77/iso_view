@@ -33,6 +33,8 @@ function IsoView() {
 	this.mouseDown1 = false;
 	this.mouseDown2 = false;
 	this.mouseDragged = false;
+	this.mouseXatPress = 0;
+	this.mouseYatPress = 0;
 	this.prevMouseX = 0;
 	this.prevMouseY = 0;
 	this.panX = 0;
@@ -41,8 +43,9 @@ function IsoView() {
 	this.renderShaded = true;
 	this.renderEdges = true;
 	this.renderNodes = false;
-	this.selectedObjects = [];
 	this.drawSelected = true;
+	this.selectedObjects = [];
+	this.progId = 0;
 	var instance = this;
 
 	var lightVector = [ 1.0, 0.0, -0.5 ];
@@ -108,7 +111,8 @@ function IsoView() {
 		a = a * 0.01745329252;
 		return Math.cos(a);
 	};
-	/* Make cos and sin usable from outside*/
+
+	/* Make cos and sin usable from outside */
 	this.sin = sin;
 	this.cos = cos;
 
@@ -214,15 +218,16 @@ function IsoView() {
 		if (src.mouseDown2) { // rotation function
 			src.theta += event.x - src.prevMouseX;
 			src.draw();
-			src.mouseDragged = true;
+			// src.mouseDragged = true;
 		} else if (src.mouseDown1) { // pad function
 			src.panX += event.x - src.prevMouseX;
 			src.panY += event.y - src.prevMouseY;
 			src.draw();
-			src.mouseDragged = true;
-		} else {
-			src.mouseDragged = false;
+			// src.mouseDragged = true;
 		}
+		// else {
+		// src.mouseDragged = false;
+		// }
 		src.prevMouseX = event.x;
 		src.prevMouseY = event.y;
 
@@ -239,6 +244,8 @@ function IsoView() {
 			src.mouseDown1 = true;
 		}
 		src.mouseDragged = false;
+		src.mouseXatPress = event.x;
+		src.mouseYatPress = event.y;
 	};
 
 	var mouseUpCanvas = function(event) {
@@ -248,9 +255,12 @@ function IsoView() {
 		src.mouseDown1 = false;
 		src.mouseDown2 = false;
 
-		/* calculates dot product (light, face) */
-//		var face = src.searchFace("f0");
-//		src.computeShading(face);
+		if (src.mouseXatPress == event.x && src.mouseYatPress == event.y) {
+			src.mouseDragged = false;
+		} else {
+			src.mouseDragged = true;
+		}
+
 	};
 
 	var mouseRightClickCanvas = function(event) {
@@ -582,9 +592,9 @@ function IsoView() {
 						color[2] = limit(Math.round(color[2]), 0, 255);
 						this.ctx.fillStyle = "rgb(" + color[0] + "," + color[1] + "," + color[2] + ")";
 					} else {
-						this.ctx.fillStyle =  this.faces[i].color;
+						this.ctx.fillStyle = this.faces[i].color;
 					}
-					
+
 				}
 			}
 
@@ -622,22 +632,6 @@ function IsoView() {
 			}
 		}
 
-		/* TOP-DOWN (DEBUG): */
-
-		// for (var i = 0; i < n; i++) {
-		// ctx.beginPath();
-		// var p = rotate(nodes[faces[i].nodes[0]], theta - 45);
-		// ctx.moveTo(canvasCenterX + 600 + p[0] * scale, canvasCenterY + p[1] *
-		// scale);
-		// for (var a = 1; a < faces[i].nodes.length; a++) {
-		// var p = rotate(nodes[faces[i].nodes[a]], theta - 45);
-		// ctx.lineTo(canvasCenterX + 600 + p[0] * scale, canvasCenterY + p[1] *
-		// scale);
-		//
-		// }
-		// ctx.closePath();
-		// ctx.stroke();
-		// }
 		/* NODES: */
 
 		if (this.renderNodes) {
@@ -703,17 +697,22 @@ function IsoView() {
 	};
 
 	/**
-	 * adds a 3D object to the canvas. Format: obj = { 'origin' : [x, y, z],
-	 * (coordinates of the relative origin of this object) 'nodes' : [ [x, y,
-	 * z], [x, y, z], [x, y, z], ... ] (array coordinates of the vertices of the
-	 * object) 'faces' : [ { (array of objects with the following fields) 'id':
-	 * string, (id of the face, for debug purposes only) 'nodes': [ 0, 1, 2, 3 ],
-	 * (array of nodes id forming the face, in clockwise order. No need to
-	 * specify the first node as last, the poly will be automatically closed)
+	 * adds a 3D object to the canvas. Format: obj = { 'id': string, 'origin' :
+	 * [x, y, z], (coordinates of the relative origin of this object) 'nodes' : [
+	 * [x, y, z], [x, y, z], [x, y, z], ... ] (array coordinates of the vertices
+	 * of the object) 'faces' : [ { (array of objects with the following fields)
+	 * 'id': string, (id of the face, for debug purposes only) 'nodes': [ 0, 1,
+	 * 2, 3 ], (array of nodes id forming the face, in clockwise order. No need
+	 * to specify the first node as last, the poly will be automatically closed)
 	 * 'color' : string (color of the face. It can be a HTML color or a pattern
 	 * id (see createPattern) }, ... ] }
 	 */
 	this.addObject = function(obj) {
+
+		if (obj.id == undefined) {
+			obj.id = 'obj' + this.objects.length;
+		}
+
 		var totalNodes = this.nodes.length;
 		for (var i = 0; i < obj.nodes.length; i++) {
 			obj.nodes[i][0] += obj.origin[0];
@@ -737,4 +736,14 @@ function IsoView() {
 		obj.isSelected = false;
 		this.objects.push(obj);
 	};
+
+	this.removeObject = function(id) {
+		// TODO
+	}
+
+	this.clear = function() {
+		this.nodes = [];
+		this.faces = [];
+		this.objects = [];
+	}
 }
