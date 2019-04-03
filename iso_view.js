@@ -249,8 +249,8 @@ function IsoView() {
 		src.mouseDown2 = false;
 
 		/* calculates dot product (light, face) */
-		var face = src.searchFace("f0");
-		src.computeShading(face);
+//		var face = src.searchFace("f0");
+//		src.computeShading(face);
 	};
 
 	var mouseRightClickCanvas = function(event) {
