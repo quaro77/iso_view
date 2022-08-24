@@ -48,5 +48,5 @@ var obj = {
  - PAN: mouse drag with left-button pressed.
  - ROTATE: mouse drag with right-button pressed.
  - ZOOM: mouse wheel.
- 
+  
  Some usage examples can be found in 'example.html'
